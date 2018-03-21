@@ -1,0 +1,47 @@
+---
+
+##################################################
+# LOG & OUTPUT
+#
+CFG_DIR: log/config/
+DEBUG_DIR: log/debug/
+LOG_DIR: log/
+OUTPUT_DIR: log/output/
+
+##################################################
+# JUNOS Ansible Module Generic
+#
+NETCONF_PORT: 22
+
+##################################################
+# JUNOS Ansible Module junos_install_os
+#
+VSRX_VERSION: 15.1X49-D70.3
+VSRX_PACKAGE: junos-vsrx-15.1X49-D70.3-domestic.tgz
+VSRX_PKG_DIR: files/
+JUNOS_INSTALL_REBOOT: no
+
+##################################################
+# JUNOS Ansible Module junos_shutdown
+#
+JUNOS_SHUTDOWN: shutdown
+JUNOS_SHUTDOWN_REBOOT: yes
+JUNOS_SHUTDOWN_WAIT_TIME: 600
+
+##################################################
+# USER
+#
+#JUNOS_USERNAME: mechid
+#OS_USERNAME: keystone_user
+
+##################################################
+# PASSWORD
+#
+#JUNOS_PASSWORD:
+#OS_PASSWORD: ""
+
+##################################################
+# SSH_PUB_KEY
+#
+#mechid_public_key: ssh-rsa 1234567890abcdefghijklmnopqrstuvwxyz
+#SSH_PRIVATE_KEY_FILE: /home/user/.ssh/id_rsa

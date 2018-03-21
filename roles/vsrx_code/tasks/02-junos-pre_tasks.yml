@@ -1,0 +1,99 @@
+---
+################################################################################
+# Nested YAML with Tasks - By F0otsh0T / Johnny C
+################################################################################
+# Pre-Upgrade Tasks:
+#   - 02-JUNOSInstallPreTaskDeleteAISScripts: Delete AIS
+#   - 02-JUNOSInstallPreTaskDeleteAISConfig: Delete AIS CFG
+#   - 02-JUNOSInstallPreTaskGetConfig: Get Config
+################################################################################
+#  tasks:
+##########
+  - name: 02-CheckNetConfConnectivity
+    wait_for:
+      host: "{{ ansible_host }}"
+      port: "{{ NETCONF_PORT }}"
+      timeout: 30
+
+################################################################################
+# Delete vSRX AIS Scripts from vSRX
+################################################################################
+  - name: 02-JUNOSInstallPreTaskDeleteAISScripts
+    junos_command:
+      host: "{{ ansible_host }}"
+      port: "{{ NETCONF_PORT }}"
+      username: "{{ JUNOS_USERNAME }}"
+      ssh_keyfile: "{{ SSH_PRIVATE_KEY_FILE }}"
+#      password: "{{ JUNOS_PASSWORD }}"
+      commands:
+        - "request system scripts delete"
+#        - "show configuration | no-more"
+#      wait_for:
+#        - result[0] contains jais
+#        - result[1] contains version
+      timeout: 90
+    register: PRETASKAISDELETE
+######################
+    ignore_errors: yes
+######################
+##########
+  - name: 02-DebugPRETASKAISDELETE
+    debug:
+      msg: "{{ PRETASKAISDELETE }}"
+##########
+  - name: 02-CopyDebugPRETASKAISDELETE
+    copy:
+      content: "{{ PRETASKAISDELETE }}"
+      dest: "{{ DEBUG_DIR }}/02.debug.pretask_ais_delete.{{ inventory_hostname }}"
+
+################################################################################
+# Delete AIS References from vSRX Config
+################################################################################
+  - name: 02-JUNOSInstallPreTaskDeleteAISConfig
+    junos_config:
+      host: "{{ ansible_host }}"
+      port: "{{ NETCONF_PORT }}"
+      username: "{{ JUNOS_USERNAME }}"
+      ssh_keyfile: "{{ SSH_PRIVATE_KEY_FILE }}"
+#      password: "{{ JUNOS_PASSWORD }}"
+      lines:
+        - "delete groups juniper-ais"
+        - "delete apply-groups"
+      timeout: 90
+    register: PRETASKAISCONFIGDELETE
+######################
+    ignore_errors: yes
+######################
+##########
+  - name: 02-DebugPRETASKAISCONFIGDELETE
+    debug:
+      msg: "{{ PRETASKAISCONFIGDELETE }}"
+##########
+  - name: 02-CopyDebugPRETASKAISCONFIGDELETE
+    copy:
+      content: "{{ PRETASKAISCONFIGDELETE }}"
+      dest: "{{ DEBUG_DIR }}/02.debug.pretask_ais_config_delete.{{ inventory_hostname }}"
+
+################################################################################
+# Check Config & Record Output for Post Rebuild vSRX Configuration
+################################################################################
+  - name: 02-JUNOSInstallPreTaskGetConfig
+    junos_get_config:
+      host: "{{ ansible_host }}"
+      port: "{{ NETCONF_PORT }}"
+      user: "{{ JUNOS_USERNAME }}"
+      ssh_private_key_file: "{{ SSH_PRIVATE_KEY_FILE }}"
+#      passwd: "{{ JUNOS_PASSWORD }}"
+      dest: "{{ CFG_DIR }}/{{ inventory_hostname }}.conf"
+      logfile: "{{ LOG_DIR }}/02.log.pretask_get_config.{{ inventory_hostname }}"
+    register: PRETASKGETCONFIG
+##########
+  - name: 02-DebugPRETASKGETCONFIG
+    debug:
+      msg: "{{ PRETASKGETCONFIG }}"
+##########
+  - name: 02-CopyDebugPRETASKGETCONFIG
+    copy:
+      content: "{{ PRETASKGETCONFIG }}"
+      dest: "{{ DEBUG_DIR }}/02.debug.pretask_get_config.{{ inventory_hostname }}"
+

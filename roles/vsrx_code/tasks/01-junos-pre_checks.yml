@@ -1,0 +1,116 @@
+---
+################################################################################
+# Nested YAML with Tasks - By F0otsh0T / Johnny C
+################################################################################
+# Pre-Upgrade Checks:
+#   - 01-CheckNetConfConnectivity: Check Connectivity
+#   - 01-JUNOSInstallPreCheckInterfaces: Get Interface Info
+#   - 01-JUNOSInstallPreCheckLicense: Get License Info
+#   - 01-JUNOSInstallPreCheckConfig: Get Config
+################################################################################
+#  tasks:
+##########
+  - name: 01-CheckNetConfConnectivity
+    wait_for:
+      host: "{{ ansible_host }}"
+      port: "{{ NETCONF_PORT }}"
+      timeout: 30
+################################################################################
+# Check Interfaces & Record Output
+################################################################################
+  - name: 01-JUNOSInstallPreCheckInterfaces
+    junos_cli:
+      host: "{{ ansible_host }}"
+      port: "{{ NETCONF_PORT }}"
+      user: "{{ JUNOS_USERNAME }}"
+#      passwd: "{{ JUNOS_PASSWORD }}"
+      ssh_private_key_file: "{{ SSH_PRIVATE_KEY_FILE }}"
+      cli: "show interfaces terse"
+      dest: "{{ OUTPUT_DIR }}/01.output.precheck_interfaces.{{ inventory_hostname }}"
+      logfile: "{{ LOG_DIR }}/01.log.precheck_interfaces.{{ inventory_hostname }}"
+    register: PRECHECKINTERFACES
+##########
+  - name: 01-DebugPRECHECKINTERFACES
+    debug:
+      msg: "{{ PRECHECKINTERFACES }}"
+##########
+  - name: 01-CopyDebugPRECHECKINTERFACES
+    copy:
+      content: "{{ PRECHECKINTERFACES }}"
+      dest: "{{ DEBUG_DIR }}/01.debug.precheck_interfaces.{{ inventory_hostname }}"
+
+################################################################################
+# Check System License & Record Output
+################################################################################
+  - name: 01-JUNOSInstallPreCheckLicense
+    junos_cli:
+      host: "{{ ansible_host }}"
+      port: "{{ NETCONF_PORT }}"
+      user: "{{ JUNOS_USERNAME }}"
+      ssh_private_key_file: "{{ SSH_PRIVATE_KEY_FILE }}"
+#      passwd: "{{ JUNOS_PASSWORD }}"
+      cli: "show system license"
+      dest: "{{ OUTPUT_DIR }}/01.output.precheck_license.{{ inventory_hostname }}"
+      logfile: "{{ LOG_DIR }}/01.log.precheck_license.{{ inventory_hostname }}"
+    register: PRECHECKLICENSE
+##########
+  - name: 01-DebugPRECHECKLICENSE
+    debug:
+      msg: "{{ PRECHECKLICENSE }}"
+##########
+  - name: 01-CopyDebugPRECHECKLICENSE
+    copy:
+      content: "{{ PRECHECKLICENSE }}"
+      dest: "{{ DEBUG_DIR }}/01.debug.precheck_license.{{ inventory_hostname }}"
+
+################################################################################
+# Check System Configuration & Record Output
+################################################################################
+  - name: 01-JUNOSInstallPreCheckConfig
+    junos_cli:
+      host: "{{ ansible_host }}"
+      port: "{{ NETCONF_PORT }}"
+      user: "{{ JUNOS_USERNAME }}"
+      ssh_private_key_file: "{{ SSH_PRIVATE_KEY_FILE }}"
+#      passwd: "{{ JUNOS_PASSWORD }}"
+      cli: "show configuration | no-more"
+      dest: "{{ OUTPUT_DIR }}/01.output.precheck_cfg.{{ inventory_hostname }}.conf"
+      logfile: "{{ LOG_DIR }}/01.log.precheck_cfg.{{ inventory_hostname }}"
+    register: PRECHECKCONFIG
+##########
+  - name: 01-DebugPRECHECKCONFIG
+    debug:
+      msg: "{{ PRECHECKCONFIG }}"
+##########
+  - name: 01-CopyDebugPRECHECKCONFIG
+    copy:
+      content: "{{ PRECHECKCONFIG }}"
+      dest: "{{ DEBUG_DIR }}/01.debug.precheck_cfg.{{ inventory_hostname }}"
+
+################################################################################
+# Check RSI & Record Output
+################################################################################
+  - name: 01-JUNOSInstallPreCheckRSI
+    junos_cli:
+      host: "{{ ansible_host }}"
+      port: "{{ NETCONF_PORT }}"
+      user: "{{ JUNOS_USERNAME }}"
+      ssh_private_key_file: "{{ SSH_PRIVATE_KEY_FILE }}"
+#      passwd: "{{ JUNOS_PASSWORD }}"
+      cli: "request support information | no-more"
+      dest: "{{ OUTPUT_DIR }}/01.output.precheck_rsi.{{ inventory_hostname }}"
+      logfile: "{{ LOG_DIR }}/01.log.precheck_rsi.{{ inventory_hostname }}"
+      timeout: 90
+    register: PRECHECKRSI
+######################
+    ignore_errors: yes
+######################
+##########
+  - name: 01-DebugPRECHECKRSI
+    debug:
+      msg: "{{ PRECHECKRSI }}"
+##########
+  - name: 01-CopyDebugPRECHECKRSI
+    copy:
+      content: "{{ PRECHECKRSI }}"
+      dest: "{{ DEBUG_DIR }}/01.debug.precheck_rsi.{{ inventory_hostname }}"

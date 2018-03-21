@@ -1,0 +1,181 @@
+---
+################################################################################
+# Nested YAML with Tasks - By F0otsh0T / Johnny C
+################################################################################
+# JUNOS Renew DHCP Leases
+#   - 08-RestartFPC: Restart Chassis FPC
+#   - 08-DHCPRenewLeft: Renew DHCP LEFT interface
+#   - 08-DHCPRenewRight: Renew DHCP RIGHT interface
+################################################################################
+#  tasks:
+##########
+  - name: 08-CheckNetConfConnectivity
+    wait_for:
+      host: "{{ ansible_host }}"
+      port: "{{ NETCONF_PORT }}"
+      timeout: 300
+
+################################################################################
+# Check Interfaces (Pre DHCP Renew) & Record Output
+################################################################################
+  - name: 08-CheckInterfacesPreRenew
+    junos_cli:
+      host: "{{ ansible_host }}"
+      port: "{{ NETCONF_PORT }}"
+      user: "{{ JUNOS_USERNAME }}"
+      ssh_private_key_file: "{{ SSH_PRIVATE_KEY_FILE }}"
+#      passwd: "{{ JUNOS_PASSWORD }}"
+      cli: "show interfaces terse"
+      dest: "{{ OUTPUT_DIR }}/08.output.check_interfaces_prerenew.{{ inventory_hostname }}"
+      logfile: "{{ LOG_DIR }}/08.log.check_interfaces_prerenew.{{ inventory_hostname }}"
+    register: CHECKINTERFACESPRERENEW
+##########
+  - name: 08-DebugCHECKINTERFACESPRERENEW
+    debug:
+      msg: "{{ CHECKINTERFACESPRERENEW }}"
+##########
+  - name: 08-CopyDebugCHECKINTERFACESPRERENEW
+    copy:
+      content: "{{ CHECKINTERFACESPRERENEW }}"
+      dest: "{{ DEBUG_DIR }}/08.debug.check_interfaces_prerenew.{{ inventory_hostname }}"
+
+################################################################################
+# Restart FPC
+################################################################################
+  - name: 08-RestartFPC
+    junos_cli:
+      host: "{{ ansible_host }}"
+      port: "{{ NETCONF_PORT }}"
+      user: "{{ JUNOS_USERNAME }}"
+      ssh_private_key_file: "{{ SSH_PRIVATE_KEY_FILE }}"
+#      passwd: "{{ JUNOS_PASSWORD }}"
+      cli: "request chassis fpc restart slot 0"
+      dest: "{{ OUTPUT_DIR }}/08.output.restartfpc.{{ inventory_hostname }}"
+      logfile: "{{ LOG_DIR }}/08.log.restartfpc.{{ inventory_hostname }}"
+    register: RESTARTFPC
+##########
+  - name: 08-DebugRESTARTFPC
+    debug:
+      msg: "{{ RESTARTFPC }}"
+##########
+  - name: 08-CopyDebugRESTARTFPC
+    copy:
+      content: "{{ RESTARTFPC }}"
+      dest: "{{ DEBUG_DIR }}/08.debug.restartfpc.{{ inventory_hostname }}"
+
+################################################################################
+# Pause for FPC Restart
+################################################################################
+  - name: 08-PauseForRestartFPC
+    pause:
+      seconds: 60
+
+################################################################################
+# Pause for FPC DHCP Renewal
+################################################################################
+  - name: 08-PauseForFPCDHCPRenewal
+    pause:
+      seconds: 30
+
+################################################################################
+# Check FPC Status
+################################################################################
+  - name: 08-FPCStatus
+    junos_cli:
+      host: "{{ ansible_host }}"
+      port: "{{ NETCONF_PORT }}"
+      user: "{{ JUNOS_USERNAME }}"
+      ssh_private_key_file: "{{ SSH_PRIVATE_KEY_FILE }}"
+#      passwd: "{{ JUNOS_PASSWORD }}"
+      cli: "show chassis fpc pic-status"
+      dest: "{{ OUTPUT_DIR }}/08.output.fpcstatus.{{ inventory_hostname }}"
+      logfile: "{{ LOG_DIR }}/08.log.fpcstatus.{{ inventory_hostname }}"
+    register: FPCSTATUS
+##########
+  - name: 08-DebugFPCSTATUS
+    debug:
+      msg: "{{ FPCSTATUS }}"
+##########
+  - name: 08-CopyDebugFPCSTATUS
+    copy:
+      content: "{{ FPCSTATUS }}"
+      dest: "{{ DEBUG_DIR }}/08.debug.fpcstatus.{{ inventory_hostname }}"
+
+################################################################################
+# Renew DHCP - Left Interface
+################################################################################
+  - name: 08-DHCPRenewLeft
+    junos_cli:
+      host: "{{ ansible_host }}"
+      port: "{{ NETCONF_PORT }}"
+      user: "{{ JUNOS_USERNAME }}"
+      ssh_private_key_file: "{{ SSH_PRIVATE_KEY_FILE }}"
+#      passwd: "{{ JUNOS_PASSWORD }}"
+      cli: "request dhcp client renew interface ge-0/0/0"
+      dest: "{{ OUTPUT_DIR }}/08.output.dhcprenewleft.{{ inventory_hostname }}"
+      logfile: "{{ LOG_DIR }}/08.log.dhcprenewleft.{{ inventory_hostname }}"
+    register: DHCPRENEWLEFT
+##########
+  - name: 08-DebugDHCPRENEWLEFT
+    debug:
+      msg: "{{ DHCPRENEWLEFT }}"
+##########
+  - name: 08-CopyDebugDHCPRENEWLEFT
+    copy:
+      content: "{{ DHCPRENEWLEFT }}"
+      dest: "{{ DEBUG_DIR }}/08.debug.dhcprenewleft.{{ inventory_hostname }}"
+
+################################################################################
+# Renew DHCP - Right Interface
+################################################################################
+  - name: 08-DHCPRenewRight
+    junos_cli:
+      host: "{{ ansible_host }}"
+      port: "{{ NETCONF_PORT }}"
+      user: "{{ JUNOS_USERNAME }}"
+      ssh_private_key_file: "{{ SSH_PRIVATE_KEY_FILE }}"
+#      passwd: "{{ JUNOS_PASSWORD }}"
+      cli: "request dhcp client renew interface ge-0/0/1"
+      dest: "{{ OUTPUT_DIR }}/08.output.dhcprenewright.{{ inventory_hostname }}"
+      logfile: "{{ LOG_DIR }}/08.log.dhcprenewright.{{ inventory_hostname }}"
+    register: DHCPRENEWRIGHT
+##########
+  - name: 08-DebugDHCPRENEWRIGHT
+    debug:
+      msg: "{{ DHCPRENEWRIGHT }}"
+##########
+  - name: 08-CopyDebugDHCPRENEWRIGHT
+    copy:
+      content: "{{ DHCPRENEWRIGHT }}"
+      dest: "{{ DEBUG_DIR }}/08.debug.dhcprenewright.{{ inventory_hostname }}"
+
+################################################################################
+# Pause for DHCP Renewal
+################################################################################
+  - name: 08-PauseForDHCPRenewal
+    pause:
+      seconds: 30
+
+################################################################################
+# Check Interfaces (Post DHCP Renew) & Record Output
+################################################################################
+  - name: 08-CheckInterfacesPostRenew
+    junos_cli:
+      host: "{{ ansible_host }}"
+      port: "{{ NETCONF_PORT }}"
+      user: "{{ JUNOS_USERNAME }}"
+      ssh_private_key_file: "{{ SSH_PRIVATE_KEY_FILE }}"
+#      passwd: "{{ JUNOS_PASSWORD }}"
+      cli: "show interfaces terse"
+      dest: "{{ OUTPUT_DIR }}/08.output.check_interfaces_postrenew.{{ inventory_hostname }}"
+      logfile: "{{ LOG_DIR }}/08.log.check_interfaces_postrenew.{{ inventory_hostname }}"
+    register: CHECKINTERFACESPOSTRENEW
+##########
+  - name: 08-DebugCHECKINTERFACESPOSTRENEW
+    debug:
+      msg: "{{ CHECKINTERFACESPOSTRENEW }}"
+##########
+  - name: 08-CopyDebugCHECKINTERFACESPOSTRENEW
+    copy:
+      content: "{{ CHECKINTERFACESPOSTRENEW }}"
+      dest: "{{ DEBUG_DIR }}/08.debug.check_interfaces_postrenew.{{ inventory_hostname }}"

@@ -1,0 +1,103 @@
+---
+################################################################################
+# Ansible Playbook YAML - by F0otsh0T / Johnny C
+################################################################################
+# Upgrade Tasks for vSRX Rebuild in Contrail 3.x Environments
+################################################################################
+#  tasks:
+##########
+#- include: test/00-testbed.yml
+#- include: test/00-testbed.c2x.yml
+#  tags: [c2x]
+#  tags:
+#    - test
+#    - 00-testbed.c2x
+#    - c2x
+#- include: test/00-testbed.c3x.yml
+##  tags: [c3x]
+#  tags:
+#    - 00-testbed.c3x
+#    - test
+#    - c3x
+- include: 01-junos-pre_checks.yml
+  tags:
+#    - test
+    - 01-junos-pre_checks
+    - c2x
+    - c3x
+- include: 02-junos-pre_tasks.yml
+  tags:
+#    - test
+    - 02-junos-pre_tasks
+    - c2x
+    - c3x
+- include: 03-os-vmi_down.c2x.yml
+  tags:
+#    - test
+    - 03-os-vmi_down.c2x
+    - c2x
+    - reboot.c2x
+    - vmi_down.c2x
+- include: 03-os-vmi_down.c3x.yml
+  tags:
+#    - test
+    - 03-os-vmi_down.c3x
+    - c3x
+    - reboot.c3x
+    - vmi_down.c3x
+- include: 04-junos-install_os.yml
+  tags:
+#    - test
+    - 04-junos-install_os
+#    - c2x
+#    - c3x
+    - upgrade
+- include: 04-os-server_rebuild.yml
+  tags:
+#    - test
+    - 04-os-server_rebuild
+#    - c2x
+#    - c3x
+    - rebuild
+- include: 05-junos-install_config.yml
+  tags:
+#    - test
+    - 05-junos-install_config
+    - c2x
+    - c3x
+- include: 06-junos-reboot.yml
+  tags:
+#    - test
+    - 06-junos-reboot
+    - c2x
+    - c3x
+    - reboot.c2x
+    - reboot.c3x
+- include: 07-os-vmi_up.c2x.yml
+  tags:
+#    - test
+    - 07-os-vmi_up.c2x
+    - c2x
+    - reboot.c2x
+    - vmi_up.c2x
+- include: 07-os-vmi_up.c3x.yml
+  tags:
+#    - test
+    - 07-os-vmi_up.c3x
+    - c3x
+    - reboot.c3x
+    - vmi_up.c3x
+- include: 08-junos-dhcp_renew.yml
+  tags:
+#    - test
+    - 08-junos-dhcp_renew
+    - c2x
+    - c3x
+    - reboot.c2x
+    - reboot.c3x
+- include: 09-junos-post_checks.yml
+  tags:
+#    - test
+    - 09-junos-post_checks
+    - c2x
+    - c3x

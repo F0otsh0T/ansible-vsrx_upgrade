@@ -1,0 +1,70 @@
+---
+################################################################################
+# Nested YAML with Tasks - By F0otsh0T / Johnny C
+################################################################################
+# Ansible OS Module for Server or VM Actions:
+# Need to use custom Ansible 2.3 os_server_actions module - verify compiled
+# *.pyc file for 32-bit or 64-bit node where playbooks are being run from.
+################################################################################
+# OpenStack VM Rebuild:
+#   - 04-OS_SERVER_ACTIONS_REBUILD: Rebuild Instance
+################################################################################
+#  tasks:
+
+################################################################################
+# Set Variables
+################################################################################
+  - name: 04-SetFact
+    set_fact:
+      TENANT: "{{ OS_PROJECT_NAME }}"
+    register: SETFACT
+##########
+  - name: 04-DebugSETFACT
+    debug:
+      msg: "{{ SETFACT }}"
+
+################################################################################
+# Rebuild VM
+################################################################################
+  - name: 04-OS_SERVER_ACTIONS_REBUILD
+#    os_server_actions-23_32:
+#    os_server_actions-23_64:
+    os_server_actions:
+      action: rebuild
+      auth:
+        auth_url: "{{ OS_AUTH_URL }}"
+        username: "{{ OS_USERNAME }}"
+        password: "{{ OS_PASSWORD }}"
+        project_name: "{{ OS_PROJECT_NAME }}"
+      server: "{{ inventory_hostname }}"
+      image: "{{ OS_VSRX_IMAGE }}"
+      timeout: 284
+      wait: yes
+    register: OSA_REBUILD
+######################
+    ignore_errors: yes
+######################
+  - name: 04-DebugOSA_REBUILD
+    debug:
+      msg: "{{ OSA_REBUILD }}"
+##########
+  - name: 04-CopyDebugOSA_REBUILD
+    copy:
+      content: "{{ OSA_REBUILD }}"
+      dest: "{{ DEBUG_DIR }}/04.debug.osa_rebuild_vm.{{ TENANT }}.{{ inventory_hostname }}"
+
+################################################################################
+# Pause
+################################################################################
+  - name: 04-PauseForRebuild
+    pause:
+      seconds: 60
+
+################################################################################
+# Check and wait for network connectivity to VM
+################################################################################
+  - name: 04-CheckNetConfConnectivity
+    wait_for:
+      host: "{{ ansible_host }}"
+      port: "{{ NETCONF_PORT }}"
+      timeout: "{{ JUNOS_SHUTDOWN_WAIT_TIME }}"

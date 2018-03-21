@@ -1,0 +1,15 @@
+---
+
+##################################################
+# Open Stack OpenRC Environment Variables
+# Static
+#
+OS_AUTH_URL: "os_auth_url"
+OS_PROJECT_NAME: "project_name"
+OS_TENANT_ID: "tenant_id"
+OS_TENANT_NAME: "tenant_name"
+##################################################
+# GLANCE Image Information - For "nova rebuild" method
+# Snapshot Image of vSRX with FXP0 set to DHCP
+# with MechID User/Pass/SSH-KEY preconfigured
+OS_VSRX_IMAGE: "SRX_FIREWALL_15.1X49-D70.3.qcow2"
