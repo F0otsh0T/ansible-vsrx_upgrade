@@ -1,0 +1,46 @@
+---
+################################################################################
+# Nested YAML with Tasks - By F0otsh0T
+################################################################################
+# JUNOS Tasks:
+#   - JUNOSCheckRSI: Get RSI Info
+################################################################################
+#  Tasks:
+################################################################################
+
+################################################################################
+# Check Connectivity
+################################################################################
+  - name: CheckNetConfConnectivity
+    wait_for:
+      host: "{{ ansible_host }}"
+      port: "{{ NETCONF_PORT }}"
+      timeout: 60
+
+################################################################################
+# Check RSI & Record Output
+################################################################################
+  - name: JUNOSCheckRSI
+    junos_cli:
+      host: "{{ ansible_host }}"
+      port: "{{ NETCONF_PORT }}"
+      user: "{{ JUNOS_USERNAME }}"
+      ssh_private_key_file: "{{ SSH_PRIVATE_KEY_FILE }}"
+#      passwd: "{{ JUNOS_PASSWORD }}"
+      cli: "request support information | no-more"
+      dest: "{{ OUTPUT_DIR }}/out.junos-check_rsi.{{ inventory_hostname }}"
+      logfile: "{{ LOG_DIR }}/log.junos-check_rsi.{{ inventory_hostname }}"
+      timeout: 90
+    register: CHECKRSI
+######################
+    ignore_errors: yes
+######################
+##########
+  - name: DebugCHECKRSI
+    debug:
+      msg: "{{ CHECKRSI }}"
+##########
+  - name: CopyDebugCHECKRSI
+    copy:
+      content: "{{ CHECKRSI }}"
+      dest: "{{ DEBUG_DIR }}/deb.junos-check_rsi.{{ inventory_hostname }}"

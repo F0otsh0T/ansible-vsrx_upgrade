@@ -99,4 +99,11 @@ ENV/
 .mypy_cache/
 
 
+.idea
 .idea/
+.idea/*
+.idea/ansible-vsrx_upgrade.iml
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
+.idea/workspace.xml

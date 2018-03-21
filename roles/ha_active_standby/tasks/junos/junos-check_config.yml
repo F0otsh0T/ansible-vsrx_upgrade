@@ -1,0 +1,42 @@
+---
+################################################################################
+# Nested YAML with Tasks - By F0otsh0T
+################################################################################
+# JUNOS Tasks:
+#   - JUNOSCheckConfig: Get License Info
+################################################################################
+#  Tasks:
+################################################################################
+
+################################################################################
+# Check Connectivity
+################################################################################
+  - name: CheckNetConfConnectivity
+    wait_for:
+      host: "{{ ansible_host }}"
+      port: "{{ NETCONF_PORT }}"
+      timeout: 60
+
+################################################################################
+# Check System Configuration & Record Output
+################################################################################
+  - name: JUNOSCheckConfig
+    junos_cli:
+      host: "{{ ansible_host }}"
+      port: "{{ NETCONF_PORT }}"
+      user: "{{ JUNOS_USERNAME }}"
+      ssh_private_key_file: "{{ SSH_PRIVATE_KEY_FILE }}"
+#      passwd: "{{ JUNOS_PASSWORD }}"
+      cli: "show configuration | no-more"
+      dest: "{{ OUTPUT_DIR }}/out.junos-check_config.{{ inventory_hostname }}.conf"
+      logfile: "{{ LOG_DIR }}/log.junos-check_config.{{ inventory_hostname }}"
+    register: CHECKCONFIG
+##########
+  - name: DebugCHECKCONFIG
+    debug:
+      msg: "{{ CHECKCONFIG }}"
+##########
+  - name: CopyDebugCHECKCONFIG
+    copy:
+      content: "{{ CHECKCONFIG }}"
+      dest: "{{ DEBUG_DIR }}/deb.junos-check_config.{{ inventory_hostname }}"

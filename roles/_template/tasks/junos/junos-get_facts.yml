@@ -1,0 +1,50 @@
+---
+################################################################################
+# Nested YAML with Tasks - By F0otsh0T
+################################################################################
+# JUNOS Tasks:
+#   - JUNOSGetFacts: Get License Info
+################################################################################
+#  Tasks:
+################################################################################
+
+################################################################################
+# Check Connectivity
+################################################################################
+  - name: CheckNetConfConnectivity
+    wait_for:
+      host: "{{ ansible_host }}"
+      port: "{{ NETCONF_PORT }}"
+      timeout: 60
+
+################################################################################
+# Post Update Check Facts & Record Output
+################################################################################
+  - name: JUNOSCheckFacts
+    junos_get_facts:
+      host: "{{ ansible_host }}"
+      user: "{{ JUNOS_USERNAME }}"
+      ssh_private_key_file: "{{ SSH_PRIVATE_KEY_FILE }}"
+#      passwd: "{{ JUNOS_PASSWORD }}"
+      port: "{{ NETCONF_PORT }}"
+      logfile: "{{ LOG_DIR }}/log.junos-get_facts.{{ inventory_hostname }}"
+      savedir: "{{ OUTPUT_DIR }}"
+    register: SRXINFO
+################################################################################
+  - name: DebugSRXINFO
+    debug:
+      msg: "{{ SRXINFO }}"
+################################################################################
+  - name: CopyDebugSRXINFO
+    copy:
+      content: "{{ SRXINFO }}"
+      dest: "{{ DEBUG_DIR }}/deb.junos-get_facts.{{ inventory_hostname }}"
+################################################################################
+  - name: DebugSRXINFO.facts
+    debug:
+      msg: "{{ SRXINFO.facts }}"
+################################################################################
+  - name: CopyDebugSRXINFO.facts
+    copy:
+      content: "{{ SRXINFO.facts }}"
+      dest: "{{ DEBUG_DIR }}/deb.junos-get_facts.{{ inventory_hostname }}"

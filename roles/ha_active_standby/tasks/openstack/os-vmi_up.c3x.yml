@@ -1,0 +1,117 @@
+---
+################################################################################
+# Nested YAML with Tasks - By F0otsh0T
+################################################################################
+# OpenStack VMI/Port Up (Contrail 3.x Environments):
+#   - SetVMILeft-admin_state_up-true: Enable LEFT
+#   - SetVMIRight-admin_state_up-true: Enable RIGHT
+################################################################################
+#  tasks:
+
+################################################################################
+# Set VMI/OS::Neutron::Port Up - LEFT Interface
+################################################################################
+  - name: SetVMILeft-admin_state_up-true
+    os_port:
+      state: present
+      auth:
+        auth_url: "{{ OS_AUTH_URL }}"
+        username: "{{ OS_USERNAME }}"
+        password: "{{ OS_PASSWORD }}"
+        project_name: "{{ OS_PROJECT_NAME }}"
+########## This name could be whatever naming convention you used for your VMI/OS::Neutron::Port
+      name: "{{ inventory_hostname }}_vmi_1"
+      admin_state_up: true
+    register: SETVMI1UPLEFT
+    until: SETVMI1UPLEFT.port.admin_state_up == true
+    retries: 5
+    delay: 30
+##########
+  - name: DebugSETVMI1UPLEFT
+    debug:
+      msg: "{{ SETVMI1UPLEFT }}"
+##########
+  - name: CopyDebugSETVMI1UPLEFT
+    copy:
+      content: "{{ SETVMI1UPLEFT }}"
+      dest: "{{ DEBUG_DIR }}/deb.os-vmi_up.c3x-vmisetupleft.{{ inventory_hostname }}_vmi_1"
+
+################################################################################
+# Verify VMI/OS::Neutron::Port is Correct - LEFT Interface
+################################################################################
+  - name: WaitForvSRXVMI1
+    wait_for:
+      path: "{{ DEBUG_DIR }}/deb.os-vmi_up.c3x-vmisetupleft.{{ inventory_hostname }}_vmi_1"
+      search_regex: '"name": "{{ inventory_hostname }}_vmi_1"'
+    register: WAITFORVSRXVMI1
+##########
+  - name: DebugWAITFORVSRXVMI1
+    debug:
+      msg: "{{ WAITFORVSRXVMI1 }}"
+
+################################################################################
+# Verify VMI/OS::Neutron::Port is Up - LEFT Interface
+################################################################################
+  - name: WaitForvSRXVMI1StatusUp
+    wait_for:
+      path: "{{ DEBUG_DIR }}/deb.os-vmi_up.c3x-vmisetupleft.{{ inventory_hostname }}_vmi_1"
+      search_regex: '"admin_state_up": true'
+    register: WAITFORVSRXVMI1UP
+##########
+  - name: DebugWAITFORVSRXVMI1UP
+    debug:
+      msg: "{{ WAITFORVSRXVMI1UP }}"
+
+################################################################################
+# Set VMI/OS::Neutron::Port Up - RIGHT Interface
+################################################################################
+  - name: SetVMIRight-admin_state_up-true
+    os_port:
+      state: present
+      auth:
+        auth_url: "{{ OS_AUTH_URL }}"
+        username: "{{ OS_USERNAME }}"
+        password: "{{ OS_PASSWORD }}"
+        project_name: "{{ OS_PROJECT_NAME }}"
+########## This name could be whatever naming convention you used for your VMI/OS::Neutron::Port
+      name: "{{ inventory_hostname }}_vmi_2"
+      admin_state_up: true
+    register: SETVMI2UPRIGHT
+    until: SETVMI2UPRIGHT.port.admin_state_up == true
+    retries: 5
+    delay: 30
+##########
+  - name: DebugSETVMI2UPRIGHT
+    debug:
+      msg: "{{ SETVMI2UPRIGHT }}"
+##########
+  - name: CopyDebugSETVMI2UPRIGHT
+    copy:
+      content: "{{ SETVMI2UPRIGHT }}"
+      dest: "{{ DEBUG_DIR }}/deb.os-vmi_up.c3x-vmisetupright.{{ inventory_hostname }}_vmi_2"
+
+################################################################################
+# Verify VMI/OS::Neutron::Port is Correct - RIGHT Interface
+################################################################################
+  - name: WaitForvSRXVMI2
+    wait_for:
+      path: "{{ DEBUG_DIR }}/deb.os-vmi_up.c3x-vmisetupright.{{ inventory_hostname }}_vmi_2"
+      search_regex: '"name": "{{ inventory_hostname }}_vmi_2"'
+    register: WAITFORVSRXVMI2
+##########
+  - name: DebugWAITFORVSRXVMI2
+    debug:
+      msg: "{{ WAITFORVSRXVMI2 }}"
+
+################################################################################
+# Verify VMI/OS::Neutron::Port is Up - RIGHT Interface
+################################################################################
+  - name: WaitForvSRXVMI2StatusUp
+    wait_for:
+      path: "{{ DEBUG_DIR }}/deb.os-vmi_up.c3x-vmisetupright.{{ inventory_hostname }}_vmi_2"
+      search_regex: '"admin_state_up": true'
+    register: WAITFORVSRXVMI2UP
+##########
+  - name: DebugWAITFORVSRXVMI2UP
+    debug:
+      msg: "{{ WAITFORVSRXVMI2UP }}"

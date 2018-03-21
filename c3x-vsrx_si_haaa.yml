@@ -1,0 +1,67 @@
+---
+################################################################################
+# Ansible Playbook YAML - By F0otsh0T
+################################################################################
+# Migrate vSRX Code via set of tasks organized by TAGS:
+#    - c2x: Contrail 2.x
+#    - c3x: Contrail 3.x
+#    - rebuild: Migrate vSRX Code via REBUILD Method
+#    - upgrade: Migrate vSRX Code via UPGRADE Method
+#    - reboot.c2x: Reboot vSRX in Contrail 2.x
+#    - reboot.c3x: Reboot vSRX in Contrail 3.x
+#    - vmi_down.c2x: Shut down Service-Chained VMI's in Contrail 2.x
+#    - vmi_down.c3x: Shut down Service-Chained VMI's in Contrail 3.x
+#    - vmi_up.c2x: Admin up Service-Chained VMI's in Contrail 2.x
+#    - vmi_up.c3x: Admin up Service-Chained VMI's in Contrail 3.x
+# ** More Tags in ~/roles/<ROLE_DIR>/tasks/main.yml
+################################################################################
+- name: c3x-si_ha_active_active-playbook
+#  hosts: localhost
+#  hosts: all
+#  hosts: "{{ OS_NOVA_SERVER }}"
+  hosts: prdsrxcnc001
+#  hosts: prdsrxcnc001
+#  tags:
+#    - c3x
+  connection: local
+  serial: 1
+  vars_files:
+    - vars/vault.yml
+################################################################################
+# Contrail 3.x Specific Variables
+################################################################################
+    - roles/si_ha_active_active/vars/c3x.yml
+  gather_facts: true
+#  vars_prompt:    #### THIS MUST BE USED IN CONJUNCTION WITH PROMPTS BELOW
+################################################################################
+# Prompt for Juniper JUNOS Credentials
+################################################################################
+#  - name: JUNOS_USERNAME
+#    prompt: Ansible MechID USER
+#    private: no
+#  - name: JUNOS_PASSWORD
+#    prompt: Ansible MechID PASSWORD
+#    private: yes
+################################################################################
+# Prompt for Open Stack OpenRC Environment Variables
+################################################################################
+#  - name: OS_USERNAME
+#    prompt: OpenStack User
+#    private: no
+#  - name: OS_PASSWORD
+#    prompt: OpenStack Password
+#    private: yes
+################################################################################
+# Prompt for Nodes
+################################################################################
+#  - name: OS_NOVA_SERVER
+#    prompt: Nodes to perform playbooks on
+#    private: no
+  roles:
+    - Juniper.junos
+#    - { role: junos, tags: junos }
+#    - junos
+#    - { role: port, tags: {{ TAG }} port }
+#    - port
+#    - { role: vsrx_c2x, tags: vsrx_c2x }
+    - si_ha_active_active

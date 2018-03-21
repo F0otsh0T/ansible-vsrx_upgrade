@@ -1,0 +1,63 @@
+---
+################################################################################
+# Nested YAML with Tasks - By F0otsh0T
+################################################################################
+# JUNOS Tasks:
+#   - InstallJUNOS: Upgrade Instance using Juniper Upgrade Binaries
+################################################################################
+#  Tasks:
+################################################################################
+
+################################################################################
+# Check Connectivity
+################################################################################
+  - name: CheckNetConfConnectivity
+    wait_for:
+      host: "{{ ansible_host }}"
+      port: "{{ NETCONF_PORT }}"
+      timeout: 60
+
+################################################################################
+# Juniper.junos_install_os Upgrade
+################################################################################
+    - name: InstallJUNOS
+      junos_install_os:
+        host: "{{ ansible_host }}"
+        user: "{{ JUNOS_USERNAME }}"
+#        passwd: "{{ JUNOS_PASSWORD }}"
+        port: "{{ NETCONF_PORT }}"
+        reboot: "{{ JUNOS_INSTALL_REBOOT }}"
+        version: "{{ VSRX_VERSION }}"
+        package: "{{ VSRX_PKG_DIR}}/{{ VSRX_PACKAGE }}"
+        ssh_private_key_file: "{{ SSH_PRIVATE_KEY_FILE }}"
+################################################################################
+# Recommended that upgrade/install binaries be pre-staged on vSRX and use the
+# 'no_copy' option below as we experienced high failure rates and long times
+# in copying files over via the junos_install_os module. Binaries must be in
+# directory accessible by user account.
+#
+        no_copy: true
+        logfile: "{{ LOG_DIR }}/log.junos-install_os.{{ inventory_hostname }}"
+      register: INSTALLJUNOS
+      until:
+        - INSTALLJUNOS.ver.should == "{{ VSRX_VERSION }}"
+        - INSTALLJUNOS.changed == true
+      retries: 5
+      delay: 30
+################################################################################
+# Ignoring failure at this point since we will still need to finish the rest of
+# the tasks for testing and bringing VM back into service. Comment out to stop
+# after this failure.
+################################################################################
+########################
+      ignore_errors: yes
+########################
+##########
+    - name: DebugINSTALLJUNOS
+      debug:
+        msg: "{{ INSTALLJUNOS }}"
+##########
+    - name: CopyDebugINSTALLJUNOS
+      copy:
+        content: "{{ INSTALLJUNOS }}"
+        dest: "{{ DEBUG_DIR }}/deb.junos-install_os.{{ inventory_hostname }}"
