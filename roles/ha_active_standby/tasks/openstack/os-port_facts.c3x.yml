@@ -1,0 +1,61 @@
+---
+################################################################################
+# Nested YAML with Tasks - By F0otsh0T
+################################################################################
+# OpenStack Port Facts (Contrail 3.x Environments):
+#   - GetVMILeft-port-facts: LEFT
+#   - GetVMIRight-port-facts:  RIGHT
+################################################################################
+#  tasks:
+
+################################################################################
+# Get VMI/OS::Neutron::Port Facts - LEFT Interface
+################################################################################
+  - name: GetVMILeft-port-facts
+    os_port_facts:
+      api_timeout: 300
+      auth:
+        auth_url: "{{ OS_AUTH_URL }}"
+        username: "{{ OS_USERNAME }}"
+        password: "{{ OS_PASSWORD }}"
+        project_name: "{{ OS_PROJECT_NAME }}"
+##### This name could be whatever naming convention you used for your VMI/OS::Neutron::Port
+      port: "{{ inventory_hostname }}_vmi_1"
+      timeout: 300
+    register: GETVMI1PORTFACTS
+
+##########
+  - name: DebugGETVMI1PORTFACTS
+    debug:
+      msg: "{{ GETVMI1PORTFACTS }}"
+##########
+  - name: CopyDebugGETVMI1PORTFACTS
+    copy:
+      content: "{{ GETVMI1PORTFACTS }}"
+      dest: "{{ DEBUG_DIR }}/deb.os-port_facts.c3x-left.{{ inventory_hostname }}_vmi_1"
+
+
+################################################################################
+# Get VMI/OS::Neutron::Port Facts - RIGHT Interface
+################################################################################
+  - name: GetVMIRight-port-facts
+    os_port_facts:
+      api_timeout: 300
+      auth:
+        auth_url: "{{ OS_AUTH_URL }}"
+        username: "{{ OS_USERNAME }}"
+        password: "{{ OS_PASSWORD }}"
+        project_name: "{{ OS_PROJECT_NAME }}"
+########## This name could be whatever naming convention you used for your VMI/OS::Neutron::Port
+      port: "{{ inventory_hostname }}_vmi_2"
+      timeout: 300
+    register: GETVMI2PORTFACTS
+##########
+  - name: DebugGETVMI2PORTFACTS
+    debug:
+      msg: "{{ GETVMI2PORTFACTS }}"
+##########
+  - name: CopyDebugGETVMI2PORTFACTS
+    copy:
+      content: "{{ GETVMI2PORTFACTS }}"
+      dest: "{{ DEBUG_DIR }}/deb.os-port_facts.c3x-right.{{ inventory_hostname }}_vmi_2"

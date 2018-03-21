@@ -1,0 +1,14 @@
+---
+
+##################################################
+# Open Stack OpenRC Environment Variables
+# Static
+#
+#OS_AUTH_URL: ""
+#OS_PROJECT_NAME: ""
+#OS_TENANT_ID: ""
+#OS_TENANT_NAME: ""
+
+##################################################
+# GLANCE Image Information - For "nova rebuild" method
+#OS_VSRX_IMAGE: ""

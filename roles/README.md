@@ -2,10 +2,10 @@
 
 ###### Roles:
 
-* ~/roles/vsrx_code: vSRX Code Migration
+* ~/roles/os_actions: Framework for Ansible Plays
 
-###### Upgrade Methods:
+###### VMI / Neutron Port Up Down:
 
-* Rebuild:
-* Upgrade:
+* C2X: Contrail 2.x
+* C3X: Contrail 3.x
 

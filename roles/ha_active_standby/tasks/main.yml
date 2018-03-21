@@ -1,0 +1,146 @@
+---
+################################################################################
+# YAML with Tasks - By F0otsh0T
+################################################################################
+# Upgrade Tasks for vSRX Rebuild in Contrail Environments
+################################################################################
+#  tasks:
+##########
+- include_tasks: galaxy/galaxy-wait_for_netconf_30.yml
+  tags:
+#    - test
+    - galaxy-wait_for_netconf_30
+#    - c2x
+#    - c3x
+- include_tasks: junos/junos-check_interfaces.yml
+  tags:
+#    - test
+    - junos-check_interfaces
+    - c2x
+    - c3x
+- include_tasks: junos/junos-check_license.yml
+  tags:
+#    - test
+    - junos-check_license
+    - c2x
+    - c3x
+- include_tasks: junos/junos-check_config.yml
+  tags:
+#    - test
+    - junos-check_config
+    - c2x
+    - c3x
+- include_tasks: junos/junos-check_rsi.yml
+  tags:
+#    - test
+    - junos-check_rsi
+    - c2x
+    - c3x
+- include_tasks: junos/junos-delete_ais.yml
+  tags:
+#    - test
+    - junos-pre_tasks
+    - c2x
+    - c3x
+- include_tasks: junos/junos-get_config.yml
+  tags:
+#    - test
+    - junos-get_config
+    - c2x
+    - c3x
+- include_tasks: openstack/os-port_facts.c3x.yml
+  tags:
+#    - test
+    - os-port_facts.c3x
+#    - c2x
+#    - c3x
+- include_tasks: openstack/os-vmi_down.c2x.yml
+  tags:
+#    - test
+    - os-vmi_down.c2x
+    - c2x
+    - reboot.c2x
+    - vmi_down.c2x
+- include_tasks: openstack/os-vmi_down.c3x.yml
+  tags:
+#    - test
+    - os-vmi_down.c3x
+    - c3x
+    - reboot.c3x
+    - vmi_down.c3x
+- include_tasks: junos/junos-disable_si_interfaces.yml
+  tags:
+#    - test
+    - junos-disable_si_interfaces
+- include_tasks: junos/junos-install_os.yml
+  tags:
+#    - test
+    - junos-install_os
+#    - c2x
+#    - c3x
+    - upgrade
+- include_tasks: openstack/os-server_rebuild.yml
+  tags:
+#    - test
+    - os-server_rebuild
+#    - c2x
+#    - c3x
+    - rebuild
+- include_tasks: junos/junos-install_config.yml
+  tags:
+#    - test
+    - junos-install_config
+    - c2x
+    - c3x
+- include_tasks: junos/junos-reboot.yml
+  tags:
+#    - test
+    - junos-reboot
+    - c2x
+    - c3x
+    - reboot.c2x
+    - reboot.c3x
+- include_tasks: openstack/os-vmi_up.c2x.yml
+  tags:
+#    - test
+    - os-vmi_up.c2x
+    - c2x
+    - reboot.c2x
+    - vmi_up.c2x
+- include_tasks: openstack/os-vmi_up.c3x.yml
+  tags:
+#    - test
+    - os-vmi_up.c3x
+    - c3x
+    - reboot.c3x
+    - vmi_up.c3x
+- include_tasks: junos/junos-enable_si_interfaces.yml
+  tags:
+#    - test
+    - junos-enable_si_interfaces
+- include_tasks: junos/junos-dhcp_renew.yml
+  tags:
+#    - test
+    - junos-dhcp_renew
+    - c2x
+    - c3x
+    - reboot.c2x
+    - reboot.c3x
+- include_tasks: junos/junos-post_get_facts.yml
+  tags:
+#    - test
+    - junos-post_get_facts
+    - c2x
+    - c3x
+- include_tasks: junos/junos-post_check_interfaces.yml
+  tags:
+#    - test
+    - junos-post_check_interfaces
+    - c2x
+    - c3x
+- include_tasks: junos/junos-post_get_config.yml
+  tags:
+#    - test
+    - junos-post_get_config
+    - c2x
+    - c3x

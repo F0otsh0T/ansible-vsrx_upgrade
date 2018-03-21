@@ -1,0 +1,46 @@
+---
+################################################################################
+# Nested YAML with Tasks - By F0otsh0T
+################################################################################
+# JUNOS Tasks:
+#   - JUNOSEnableSIInterfaces: Enable LEFT & RIGHT Interfaces
+################################################################################
+#  Tasks:
+################################################################################
+
+################################################################################
+# Check Connectivity
+################################################################################
+  - name: CheckNetConfConnectivity
+    wait_for:
+      host: "{{ ansible_host }}"
+      port: "{{ NETCONF_PORT }}"
+      timeout: 60
+
+################################################################################
+# Enable ServiceInstance Interfaces
+################################################################################
+  - name: JUNOSEnableSIInterfaces
+    junos_config:
+      host: "{{ ansible_host }}"
+      port: "{{ NETCONF_PORT }}"
+      username: "{{ JUNOS_USERNAME }}"
+      ssh_keyfile: "{{ SSH_PRIVATE_KEY_FILE }}"
+#      password: "{{ JUNOS_PASSWORD }}"
+      lines:
+        - "delete interfaces ge-0/0/0 disable"
+        - "delete interfaces ge-0/0/1 disable"
+      timeout: 90
+    register: EnableSIInterfaces
+######################
+    ignore_errors: yes
+######################
+##########
+  - name: DebugEnableSIInterfaces
+    debug:
+      msg: "{{ EnableSIInterfaces }}"
+##########
+  - name: CopyDebugPRETASKAISCONFIGDELETE
+    copy:
+      content: "{{ EnableSIInterfaces }}"
+      dest: "{{ DEBUG_DIR }}/deb.junos-enable_si_interfaces.{{ inventory_hostname }}"

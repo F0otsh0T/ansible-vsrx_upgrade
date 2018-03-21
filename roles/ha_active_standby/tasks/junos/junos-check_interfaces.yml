@@ -1,0 +1,42 @@
+---
+################################################################################
+# Nested YAML with Tasks - By F0otsh0T
+################################################################################
+# JUNOS Tasks:
+#   - JUNOSCheckInterfaces: Get Interface Info
+################################################################################
+#  Tasks:
+################################################################################
+
+################################################################################
+# Check Connectivity
+################################################################################
+  - name: CheckNetConfConnectivity
+    wait_for:
+      host: "{{ ansible_host }}"
+      port: "{{ NETCONF_PORT }}"
+      timeout: 60
+
+################################################################################
+# Check Interfaces & Record Output
+################################################################################
+  - name: JUNOSCheckInterfaces
+    junos_cli:
+      host: "{{ ansible_host }}"
+      port: "{{ NETCONF_PORT }}"
+      user: "{{ JUNOS_USERNAME }}"
+#      passwd: "{{ JUNOS_PASSWORD }}"
+      ssh_private_key_file: "{{ SSH_PRIVATE_KEY_FILE }}"
+      cli: "show interfaces terse"
+      dest: "{{ OUTPUT_DIR }}/out.junos-check_interfaces.{{ inventory_hostname }}"
+      logfile: "{{ LOG_DIR }}/log.junos-check_interfaces.{{ inventory_hostname }}"
+    register: CHECKINTERFACES
+##########
+  - name: DebugCHECKINTERFACES
+    debug:
+      msg: "{{ CHECKINTERFACES }}"
+##########
+  - name: CopyDebugCHECKINTERFACES
+    copy:
+      content: "{{ CHECKINTERFACES }}"
+      dest: "{{ DEBUG_DIR }}/deb.junos-check_interfaces.{{ inventory_hostname }}"
