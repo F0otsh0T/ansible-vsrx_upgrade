@@ -1,6 +1,6 @@
 # E.g.
 #
-#devsrxcnc001 ansible_host=192.168.11.101 os_vmi_c2x=zsde1frwl01oam__1
+#devsrxcnc001 ansible_host=192.168.11.101 os_vmi_c2x=devsrxcnc001__1
 #^^^^^^^^^^^^ {{ inventory_hostname }}
 #             ^^^^^^^^^^^^^^^^^^^^^^^^^^^ {{ ansible_[/deprecated/ssh]_host }}
 #                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ {{ os_vmi_c2x }}
