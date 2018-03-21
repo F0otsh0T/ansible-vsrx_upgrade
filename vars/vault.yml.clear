@@ -1,0 +1,24 @@
+---
+
+##################################################
+# USER
+#
+
+JUNOS_USERNAME: mechid
+OS_USERNAME: keystone_user
+
+##################################################
+# PASSWORD
+#
+#JUNOS_PASSWORD: 'mechid_passwd'
+OS_PASSWORD: 'keystone_passwd'
+
+##################################################
+# SSH_PUB_KEY
+#
+USER_PUBLICKEY: ssh-rsa as;dklfja;slkfj;laskdjf;laksjdf;klasflkjas;ldfha;eiohfrqwoifhajsvn;asf;oha;wehf;ahf;klashd;flhas;ldhf;alshdfklhas;dfhalskdfh;lakshd;fklhasd;fhas;ldhfaklshdfklahsd;lfha;skldhf;laskhdf;klhasd;flhas;lvas;lvn;awepfoihweofhaosnv;lasnd;lfniowehfoavkljansd;lnas;dofhoaasjdflansd;fqwherf28yrp891h;oasv;akjsnv;asdf;ohasofhapowehfpauaohifoasidhf;lashdf;kashdf;ahsd;fhaposdhfpoasihdfoa
+
+##################################################
+# SSH_PRIVATE_KEY
+#
+SSH_PRIVATE_KEY_FILE: /home/user/.ssh/id_rsa

@@ -1,0 +1,41 @@
+---
+################################################################################
+# Nested YAML with Tasks - By F0otsh0T
+################################################################################
+# JUNOS Tasks:
+#   - JUNOSPostGetConfig: Get License Info
+################################################################################
+#  Tasks:
+################################################################################
+
+################################################################################
+# Check Connectivity
+################################################################################
+  - name: CheckNetConfConnectivity
+    wait_for:
+      host: "{{ ansible_host }}"
+      port: "{{ NETCONF_PORT }}"
+      timeout: 60
+
+################################################################################
+# Get Final System Configuration after Upgrade
+################################################################################
+  - name: JUNOSPostGetConfig
+    junos_get_config:
+      host: "{{ ansible_host }}"
+      port: "{{ NETCONF_PORT }}"
+      user: "{{ JUNOS_USERNAME }}"
+      ssh_private_key_file: "{{ SSH_PRIVATE_KEY_FILE }}"
+#      passwd: "{{ JUNOS_PASSWORD }}"
+      dest: "{{ CFG_DIR }}/{{ inventory_hostname }}.post.conf"
+      logfile: "{{ LOG_DIR }}/log.junos-post_get_config.{{ inventory_hostname }}"
+    register: POSTGETCONFIG
+##########
+  - name: DebugPOSTGETCONFIG
+    debug:
+      msg: "{{ POSTGETCONFIG }}"
+##########
+  - name: CopyDebugPRETASKPOSTGETCONFIG
+    copy:
+      content: "{{ POSTGETCONFIG }}"
+      dest: "{{ DEBUG_DIR }}/deb.junos-post_get_config.{{ inventory_hostname }}"

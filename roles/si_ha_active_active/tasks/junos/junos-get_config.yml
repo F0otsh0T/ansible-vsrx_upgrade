@@ -1,0 +1,41 @@
+---
+################################################################################
+# Nested YAML with Tasks - By F0otsh0T
+################################################################################
+# JUNOS Tasks:
+#   - JUNOSGetConfig: Get License Info
+################################################################################
+#  Tasks:
+################################################################################
+
+################################################################################
+# Check Connectivity
+################################################################################
+  - name: CheckNetConfConnectivity
+    wait_for:
+      host: "{{ ansible_host }}"
+      port: "{{ NETCONF_PORT }}"
+      timeout: 60
+
+################################################################################
+# Get System Configuration after Pre-Tasks & Record for Post-Upgrade Use
+################################################################################
+  - name: JUNOSGetConfig
+    junos_get_config:
+      host: "{{ ansible_host }}"
+      port: "{{ NETCONF_PORT }}"
+      user: "{{ JUNOS_USERNAME }}"
+      ssh_private_key_file: "{{ SSH_PRIVATE_KEY_FILE }}"
+#      passwd: "{{ JUNOS_PASSWORD }}"
+      dest: "{{ CFG_DIR }}/{{ inventory_hostname }}.conf"
+      logfile: "{{ LOG_DIR }}/log.junos-get_config.{{ inventory_hostname }}"
+    register: GETCONFIG
+##########
+  - name: DebugGETCONFIG
+    debug:
+      msg: "{{ GETCONFIG }}"
+##########
+  - name: CopyDebugPRETASKGETCONFIG
+    copy:
+      content: "{{ GETCONFIG }}"
+      dest: "{{ DEBUG_DIR }}/deb.junos-get_config.{{ inventory_hostname }}"

@@ -1,0 +1,120 @@
+---
+################################################################################
+# Nested YAML with Tasks - By F0otsh0T
+################################################################################
+# TASK TESTBED:
+#   - 00-GetVMILeft-os_port_facts: OpenStack Test
+################################################################################
+#  tasks:
+
+################################################################################
+# Ansible Cloud Module for OpenStack: os_port_facts
+# vSRX VMI 1 - LEFT / PROTECTED
+# Contrail 2.x
+################################################################################
+# Set Variables
+################################################################################
+  - name: 00-SetFact-c2x
+    set_fact:
+      TENANT: "{{ OS_PROJECT_NAME }}"
+      VMI: "{{ os_vmi_c2x }}"
+    register: SETVMIFACT
+##########
+  - name: 00-DebugSETVMIFACT-c2x
+    debug:
+      msg: "{{ SETVMIFACT }}"
+##########
+  - name: 00-CopyDebugSETVMIFACT-c2x
+    copy:
+      content: "{{ SETVMIFACT }}"
+      dest: "{{ DEBUG_DIR }}/00.debug.vmisetfact.{{ VMI }}_vmi.c2x"
+
+################################################################################
+# Get LEFT os_port_facts
+################################################################################
+  - name: 00-GetVMILeft-os_port_facts-c2x
+    os_port_facts:
+      auth:
+        auth_url: "{{ OS_AUTH_URL }}"
+        username: "{{ OS_USERNAME }}"
+        password: "{{ OS_PASSWORD }}"
+        project_name: "{{ OS_PROJECT_NAME }}"
+      port: "default-domain__{{ TENANT }}__{{ os_vmi_c2x }}__left__2"
+    register: GETVMILEFTFACTS
+##########
+  - name: 00-DebugGETVMILEFTFACTS-c2x
+    debug:
+      msg: "{{ GETVMILEFTFACTS }}"
+##########
+  - name: 00-CopyDebugGETVMILEFTFACTS-c2x
+    copy:
+      content: "{{ GETVMILEFTFACTS }}"
+      dest: "{{ DEBUG_DIR }}/00.debug.vmigetfactsleft.{{ inventory_hostname }}_vmi_1.c2x"
+
+################################################################################
+# Get RIGHT os_port_facts
+################################################################################
+  - name: 00-GetVMIRight-os_port_facts-c2x
+    os_port_facts:
+      auth:
+        auth_url: "{{ OS_AUTH_URL }}"
+        username: "{{ OS_USERNAME }}"
+        password: "{{ OS_PASSWORD }}"
+        project_name: "{{ OS_PROJECT_NAME }}"
+      port: "default-domain__{{ TENANT }}__{{ os_vmi_c2x }}__right__3"
+    register: GETVMRIGHTFACTS
+##########
+  - name: 00-DebugGETVMRIGHTFACTS-c2x
+    debug:
+      msg: "{{ GETVMRIGHTFACTS }}"
+##########
+  - name: 00-CopyDebugGETVMRIGHTFACTS-c2x
+    copy:
+      content: "{{ GETVMRIGHTFACTS }}"
+      dest: "{{ DEBUG_DIR }}/00.debug.vmigetfactsright.{{ inventory_hostname }}_vmi_2.c2x"
+
+################################################################################
+# Get os_server_facts
+################################################################################
+  - name: 00-GetVM-os_server_facts-c2x
+    os_server_facts:
+      auth:
+        auth_url: "{{ OS_AUTH_URL }}"
+        username: "{{ OS_USERNAME }}"
+        password: "{{ OS_PASSWORD }}"
+        project_name: "{{ OS_PROJECT_NAME }}"
+      server: "{{ inventory_hostname }}"
+#      detailed: "true"
+#      wait: "yes"
+    register: GETSERVERFACTS
+##########
+  - name: 00-DebugGETSERVERFACTS-c2x
+    debug:
+      msg: "{{ GETSERVERFACTS }}"
+##########
+  - name: 00-CopyDebugGETSERVERFACTS-c2x
+    copy:
+      content: "{{ GETSERVERFACTS }}"
+      dest: "{{ DEBUG_DIR }}/00.debug.vmigetfactsserver.{{ inventory_hostname }}.c2x"
+
+################################################################################
+# Get os_network_facts
+################################################################################
+  - name: 00-GetVM-os_network_facts-c2x
+    os_networks_facts:
+      auth:
+        auth_url: "{{ OS_AUTH_URL }}"
+        username: "{{ OS_USERNAME }}"
+        password: "{{ OS_PASSWORD }}"
+        project_name: "{{ OS_PROJECT_NAME }}"
+      name: "oam_mgmt_net_0"
+    register: GETNETWORKFACTS
+##########
+  - name: 00-DebugGETNETWORKFACTS-c2x
+    debug:
+      msg: "{{ GETNETWORKFACTS }}"
+##########
+  - name: 00-CopyDebugGETNETWORKFACTS-c2x
+    copy:
+      content: "{{ GETNETWORKFACTS }}"
+      dest: "{{ DEBUG_DIR }}/00.debug.vmigetfactsnetwork.oam_mgmt_net_0.c2x"

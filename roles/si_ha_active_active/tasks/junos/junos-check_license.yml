@@ -1,0 +1,42 @@
+---
+################################################################################
+# Nested YAML with Tasks - By F0otsh0T
+################################################################################
+# JUNOS Tasks:
+#   - JUNOSCheckLicense: Get License Info
+################################################################################
+#  Tasks:
+################################################################################
+
+################################################################################
+# Check Connectivity
+################################################################################
+  - name: CheckNetConfConnectivity
+    wait_for:
+      host: "{{ ansible_host }}"
+      port: "{{ NETCONF_PORT }}"
+      timeout: 60
+
+################################################################################
+# Check System License & Record Output
+################################################################################
+  - name: JUNOSCheckLicense
+    junos_cli:
+      host: "{{ ansible_host }}"
+      port: "{{ NETCONF_PORT }}"
+      user: "{{ JUNOS_USERNAME }}"
+      ssh_private_key_file: "{{ SSH_PRIVATE_KEY_FILE }}"
+#      passwd: "{{ JUNOS_PASSWORD }}"
+      cli: "show system license"
+      dest: "{{ OUTPUT_DIR }}/out.junos-check_license.{{ inventory_hostname }}"
+      logfile: "{{ LOG_DIR }}/log.junos-check_license.{{ inventory_hostname }}"
+    register: CHECKLICENSE
+##########
+  - name: DebugCHECKLICENSE
+    debug:
+      msg: "{{ CHECKLICENSE }}"
+##########
+  - name: CopyDebugCHECKLICENSE
+    copy:
+      content: "{{ CHECKLICENSE }}"
+      dest: "{{ DEBUG_DIR }}/deb.junos-check_license.{{ inventory_hostname }}"

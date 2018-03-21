@@ -1,0 +1,74 @@
+---
+################################################################################
+# Nested YAML with Tasks - By F0otsh0T
+################################################################################
+# Reboot VM:
+#   - RebootVFW: Reboot VM
+################################################################################
+#  Tasks:
+################################################################################
+
+################################################################################
+# Check Connectivity
+################################################################################
+  - name: CheckNetConfConnectivity
+    wait_for:
+      host: "{{ ansible_host }}"
+      port: "{{ NETCONF_PORT }}"
+      timeout: 300
+
+################################################################################
+# Reboot vSRX
+################################################################################
+  - name: RebootVFW
+    junos_shutdown:
+      host: "{{ ansible_host }}"
+      user: "{{ JUNOS_USERNAME }}"
+      port: "{{ NETCONF_PORT }}"
+      ssh_private_key_file: "{{ SSH_PRIVATE_KEY_FILE }}"
+#      passwd: "{{ JUNOS_PASSWORD }}"
+#      shutdown: "{{ JUNOS_SHUTDOWN }}"
+#      reboot: "{{ JUNOS_SHUTDOWN_REBOOT }}"
+      shutdown: "shutdown"
+      reboot: "yes"
+    register: SRXREBOOT
+#    notify:
+#    - JUNOS_Reboot_PauseFor
+#    - JUNOS_Reboot_WaitFor
+##########
+  - name: DebugSRXREBOOT
+    debug:
+      msg: "{{ SRXREBOOT }}"
+##########
+  - name: CopyDebugSRXREBOOT
+    copy:
+      content: "{{ SRXREBOOT }}"
+      dest: "{{ DEBUG_DIR }}/deb.junos-reboot-shutdown.{{ inventory_hostname }}"
+#  handlers:
+
+################################################################################
+# Pause
+################################################################################
+  - name: PauseForReboot
+    pause:
+      seconds: 60
+    when: SRXREBOOT.reboot == true
+
+################################################################################
+# Wait for Reboot
+################################################################################
+  - name: WaitForReboot
+    wait_for:
+      host: "{{ ansible_host }}"
+      port: "{{ NETCONF_PORT }}"
+      timeout: "{{ JUNOS_SHUTDOWN_WAIT_TIME }}"
+    when: SRXREBOOT.reboot == true
+
+################################################################################
+# Check Connectivity
+################################################################################
+  - name: CheckNetConfConnectivity
+    wait_for:
+      host: "{{ ansible_host }}"
+      port: "{{ NETCONF_PORT }}"
+      timeout: 1200
