@@ -1,0 +1,61 @@
+---
+################################################################################
+# Nested YAML with Tasks - By F0otsh0T / Johnny C
+################################################################################
+# Reboot VM:
+#   - 06-RebootVFW: Reboot VM
+################################################################################
+#  tasks:
+##########
+  - name: 06-CheckNetConfConnectivity
+    wait_for:
+      host: "{{ ansible_host }}"
+      port: "{{ NETCONF_PORT }}"
+      timeout: 300
+
+################################################################################
+# Reboot vSRX
+################################################################################
+  - name: 06-RebootVFW
+    junos_shutdown:
+      host: "{{ ansible_host }}"
+      user: "{{ JUNOS_USERNAME }}"
+      port: "{{ NETCONF_PORT }}"
+      ssh_private_key_file: "{{ SSH_PRIVATE_KEY_FILE }}"
+#      passwd: "{{ JUNOS_PASSWORD }}"
+#      shutdown: "{{ JUNOS_SHUTDOWN }}"
+#      reboot: "{{ JUNOS_SHUTDOWN_REBOOT }}"
+      shutdown: "shutdown"
+      reboot: "yes"
+    register: SRXREBOOT
+#    notify:
+#    - 06-JUNOS_Reboot_PauseFor
+#    - 06-JUNOS_Reboot_WaitFor
+##########
+  - name: 06-DebugSRXREBOOT
+    debug:
+      msg: "{{ SRXREBOOT }}"
+##########
+  - name: 06-CopyDebugSRXREBOOT
+    copy:
+      content: "{{ SRXREBOOT }}"
+      dest: "{{ DEBUG_DIR }}/06.debug.junos_shutdown.{{ inventory_hostname }}"
+#  handlers:
+
+################################################################################
+# Pause
+################################################################################
+  - name: 06-PauseForReboot
+    pause:
+      seconds: 60
+    when: SRXREBOOT.reboot == true
+
+################################################################################
+# Wait for Reboot
+################################################################################
+  - name: 06-WaitForReboot
+    wait_for:
+      host: "{{ ansible_host }}"
+      port: "{{ NETCONF_PORT }}"
+      timeout: "{{ JUNOS_SHUTDOWN_WAIT_TIME }}"
+    when: SRXREBOOT.reboot == true

@@ -1,0 +1,137 @@
+---
+################################################################################
+# Nested YAML with Tasks - By F0otsh0T / Johnny C
+################################################################################
+# OpenStack VMI/Port Up (Contrail 2.x Environments):
+#   - 07-SetVMILeft-admin_state_up-true: Enable LEFT
+#   - 07-SetVMIRight-admin_state_up-true: Enable RIGHT
+################################################################################
+#  tasks:
+
+################################################################################
+# Set Variables
+################################################################################
+  - name: 07-SetFact
+    set_fact:
+      TENANT: "{{ OS_PROJECT_NAME }}"
+      VMI: "{{ os_vmi_c2x }}"
+    register: SETVMIFACT
+##########
+  - name: 07-DebugSETVMIFACT
+    debug:
+      msg: "{{ SETVMIFACT }}"
+##########
+  - name: 07-CopyDebugSETVMIFACT
+    copy:
+      content: "{{ SETVMIFACT }}"
+      dest: "{{ DEBUG_DIR }}/07.debug.vmisetfact.default-domain__{{ TENANT }}__{{ VMI }}"
+
+################################################################################
+# Set VMI/OS::Neutron::Port Up - LEFT Interface
+################################################################################
+  - name: 07-SetVMILeft-admin_state_up-true
+    os_port:
+      state: present
+      auth:
+        auth_url: "{{ OS_AUTH_URL }}"
+        username: "{{ OS_USERNAME }}"
+        password: "{{ OS_PASSWORD }}"
+        project_name: "{{ OS_PROJECT_NAME }}"
+########## This name could be whatever naming convention you used for your VMI/OS::Neutron::Port
+      name: "default-domain__{{ TENANT }}__{{ VMI }}__left__2"
+      admin_state_up: true
+    register: SETVMI1UPLEFT
+    until: SETVMI1UPLEFT.port.admin_state_up == true
+    retries: 3
+    delay: 10
+##########
+  - name: 07-DebugSETVMI1UPLEFT
+    debug:
+      msg: "{{ SETVMI1UPLEFT }}"
+##########
+  - name: 07-CopyDebugSETVMI1UPLEFT
+    copy:
+      content: "{{ SETVMI1UPLEFT }}"
+      dest: "{{ DEBUG_DIR }}/07.debug.vmisetupleft.default-domain__{{ TENANT }}__{{ VMI }}__left__2"
+
+################################################################################
+# Verify VMI/OS::Neutron::Port is Correct - LEFT Interface
+################################################################################
+  - name: 07-WaitForvSRXVMI1
+    wait_for:
+      path: "{{ DEBUG_DIR }}/07.debug.vmisetupleft.default-domain__{{ TENANT }}__{{ VMI }}__left__2"
+#      search_regex: '"name": "default-domain__{{ TENANT }}__{{ VMI }}__left__2"'
+      search_regex: '"name": ".+?(?=__)__{{ VMI }}__left__2"'
+    register: WAITFORVSRXVMI1
+##########
+  - name: 07-DebugWAITFORVSRXVMI1
+    debug:
+      msg: "{{ WAITFORVSRXVMI1 }}"
+
+################################################################################
+# Verify VMI/OS::Neutron::Port is Up - LEFT Interface
+################################################################################
+  - name: 07-WaitForvSRXVMI1StatusUp
+    wait_for:
+      path: "{{ DEBUG_DIR }}/07.debug.vmisetupleft.default-domain__{{ TENANT }}__{{ VMI }}__left__2"
+      search_regex: '"admin_state_up": true'
+    register: WAITFORVSRXVMI1UP
+##########
+  - name: 07-DebugWAITFORVSRXVMI1UP
+    debug:
+      msg: "{{ WAITFORVSRXVMI1UP }}"
+
+################################################################################
+# Set VMI/OS::Neutron::Port Up - RIGHT Interface
+################################################################################
+  - name: 07-SetVMIRight-admin_state_up-true
+    os_port:
+      state: present
+      auth:
+        auth_url: "{{ OS_AUTH_URL }}"
+        username: "{{ OS_USERNAME }}"
+        password: "{{ OS_PASSWORD }}"
+        project_name: "{{ OS_PROJECT_NAME }}"
+########## This name could be whatever naming convention you used for your VMI/OS::Neutron::Port
+      name: "default-domain__{{ TENANT }}__{{ VMI }}__right__3"
+      admin_state_up: true
+    register: SETVMI2UPRIGHT
+    until: SETVMI2UPRIGHT.port.admin_state_up == true
+    retries: 3
+    delay: 10
+##########
+  - name: 07-DebugSETVMI2UPRIGHT
+    debug:
+      msg: "{{ SETVMI2UPRIGHT }}"
+##########
+  - name: 07-CopyDebugSETVMI2UPRIGHT
+    copy:
+      content: "{{ SETVMI2UPRIGHT }}"
+      dest: "{{ DEBUG_DIR }}/07.debug.vmisetupright.default-domain__{{ TENANT }}__{{ VMI }}__right__3"
+
+################################################################################
+# Verify VMI/OS::Neutron::Port is Correct - RIGHT Interface
+################################################################################
+  - name: 07-WaitForvSRXVMI2
+    wait_for:
+      path: "{{ DEBUG_DIR }}/07.debug.vmisetupright.default-domain__{{ TENANT }}__{{ VMI }}__right__3"
+#      search_regex: '"name": "default-domain__{{ TENANT }}__{{ VMI }}__right__3"'
+      search_regex: '"name": ".+?(?=__)__{{ VMI }}__right__3"'
+    register: WAITFORVSRXVMI2
+##########
+  - name: 07-DebugWAITFORVSRXVMI2
+    debug:
+      msg: "{{ WAITFORVSRXVMI2 }}"
+
+################################################################################
+# Verify VMI/OS::Neutron::Port is Up - RIGHT Interface
+################################################################################
+  - name: 07-WaitForvSRXVMI2StatusUp
+    wait_for:
+      path: "{{ DEBUG_DIR }}/07.debug.vmisetupright.default-domain__{{ TENANT }}__{{ VMI }}__right__3"
+      search_regex: '"admin_state_up": true'
+    register: WAITFORVSRXVMI2UP
+##########
+  - name: 07-DebugWAITFORVSRXVMI2UP
+    debug:
+      msg: "{{ WAITFORVSRXVMI2UP }}"

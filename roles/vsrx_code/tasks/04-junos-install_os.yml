@@ -1,0 +1,54 @@
+---
+################################################################################
+# Nested YAML with Tasks - By F0otsh0T / Johnny C
+################################################################################
+# OpenStack VM Rebuild:
+#   - 04-InstallJUNOS: Upgrade Instance
+################################################################################
+#  tasks:
+##########
+    - name: 04-CheckNetConfConnectivity
+      wait_for:
+        host: "{{ ansible_host }}"
+        port: "{{ NETCONF_PORT }}"
+        timeout: 300
+
+################################################################################
+# Juniper.junos_install_os Upgrade
+################################################################################
+    - name: 04-InstallJUNOS
+      junos_install_os:
+        host: "{{ ansible_host }}"
+        user: "{{ JUNOS_USERNAME }}"
+#        passwd: "{{ JUNOS_PASSWORD }}"
+        port: "{{ NETCONF_PORT }}"
+        reboot: "{{ JUNOS_INSTALL_REBOOT }}"
+        version: "{{ VSRX_VERSION }}"
+        package: "{{ VSRX_PKG_DIR}}/{{ VSRX_PACKAGE }}"
+#        no_copy: true
+        logfile: "{{ LOG_DIR }}/04.log.junos_install_os.{{ inventory_hostname }}"
+      register: INSTALLJUNOS
+      until:
+        - INSTALLJUNOS.ver.should == "{{ VSRX_VERSION }}"
+        - INSTALLJUNOS.changed == true
+#      until: "INSTALLJUNOS.ver.has == '15.1X49-D30.3' and INSTALLJUNOS.ver.should == '15.1X49-D70.3' and INSTALLJUNOS.changed == true"
+#      until: "INSTALLJUNOS.ver.has == '15.1X49-D60.7' and INSTALLJUNOS.ver.should == '15.1X49-D70.3' and INSTALLJUNOS.changed == true"
+      retries: 3
+      delay: 5
+################################################################################
+# Ignoring failure at this point since we will still need to finish the rest of
+# the tasks for testing and bringing VM back into service. Comment out to stop
+# after this failure.
+################################################################################
+########################
+      ignore_errors: yes
+########################
+##########
+    - name: 04-DebugINSTALLJUNOS
+      debug:
+        msg: "{{ INSTALLJUNOS }}"
+##########
+    - name: 04-CopyDebugINSTALLJUNOS
+      copy:
+        content: "{{ INSTALLJUNOS }}"
+        dest: "{{ DEBUG_DIR }}/04.debug.junos_install_os.{{ inventory_hostname }}"

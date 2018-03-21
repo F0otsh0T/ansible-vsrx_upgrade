@@ -1,0 +1,71 @@
+---
+################################################################################
+# Nested YAML with Tasks - By F0otsh0T / Johnny C
+################################################################################
+# Post Upgrade Checks
+#   - 09-JUNOSInstallPostCheck01Facts: Get Facts JSON
+#   - 09-JUNOSInstallPostCheck02Interfaces: Get Interface Info
+################################################################################
+#  tasks:
+################################################################################
+  - name: 09-CheckNetConfConnectivity
+    wait_for:
+      host: "{{ ansible_host }}"
+      port: "{{ NETCONF_PORT }}"
+      timeout: 300
+
+################################################################################
+# Post Update Check Facts & Record Output
+################################################################################
+  - name: 09-JUNOSInstallPostCheck01Facts
+    junos_get_facts:
+      host: "{{ ansible_host }}"
+      user: "{{ JUNOS_USERNAME }}"
+      ssh_private_key_file: "{{ SSH_PRIVATE_KEY_FILE }}"
+#      passwd: "{{ JUNOS_PASSWORD }}"
+      port: "{{ NETCONF_PORT }}"
+      logfile: "{{ LOG_DIR }}/09.log.postcheck_junos_get_facts.{{ inventory_hostname }}"
+      savedir: "{{ OUTPUT_DIR }}"
+    register: SRXINFO
+################################################################################
+  - name: 09-DebugSRXINFO
+    debug:
+      msg: "{{ SRXINFO }}"
+################################################################################
+  - name: 09-CopyDebugSRXINFO
+    copy:
+      content: "{{ SRXINFO }}"
+      dest: "{{ DEBUG_DIR }}/09.debug.postcheck_junos_get_facts.{{ inventory_hostname }}"
+################################################################################
+  - name: 09-DebugSRXINFO.facts
+    debug:
+      msg: "{{ SRXINFO.facts }}"
+################################################################################
+  - name: 09-CopyDebugSRXINFO.facts
+    copy:
+      content: "{{ SRXINFO.facts }}"
+      dest: "{{ DEBUG_DIR }}/09.debug.postcheck_junos_get_facts.srxinfofacts.{{ inventory_hostname }}"
+
+################################################################################
+# Post Update Check Interfaces & Record Output
+################################################################################
+  - name: 09-JUNOSInstallPostCheck02Interfaces
+    junos_cli:
+      host: "{{ ansible_host }}"
+      port: "{{ NETCONF_PORT }}"
+      user: "{{ JUNOS_USERNAME }}"
+      ssh_private_key_file: "{{ SSH_PRIVATE_KEY_FILE }}"
+#      passwd: "{{ JUNOS_PASSWORD }}"
+      cli: "show interfaces terse"
+      dest: "{{ OUTPUT_DIR }}/09.output.postcheck_interfaces.{{ inventory_hostname }}"
+      logfile: "{{ LOG_DIR }}/09.log.postcheck_interfaces.{{ inventory_hostname }}"
+    register: POSTCHECKINTERFACES
+################################################################################
+  - name: 09-DebugPOSTCHECKINTERFACES
+    debug:
+      msg: "{{ POSTCHECKINTERFACES }}"
+################################################################################
+  - name: 09-CopyDebugPOSTCHECKINTERFACES
+    copy:
+      content: "{{ POSTCHECKINTERFACES }}"
+      dest: "{{ DEBUG_DIR }}/09.debug.postcheck_interfaces.{{ inventory_hostname }}"

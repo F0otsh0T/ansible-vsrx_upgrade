@@ -1,0 +1,95 @@
+# E.g.
+#
+#devsrxcnc001 ansible_host=192.168.11.101 os_vmi_c2x=zsde1frwl01oam__1
+#^^^^^^^^^^^^ {{ inventory_hostname }}
+#             ^^^^^^^^^^^^^^^^^^^^^^^^^^^ {{ ansible_[/deprecated/ssh]_host }}
+#                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ {{ os_vmi_c2x }}
+
+########################
+### DEV CONTRAIL 3.x ###
+########################
+
+## Command & Control
+[devsrxcnc001]
+devsrxcnc001 ansible_host=192.168.11.101
+[devsrxcnc002]
+devsrxcnc002 ansible_host=192.168.11.102
+[devsrxcnc:children]
+devsrxcnc001
+devsrxcnc002
+
+## DMZ
+[devsrxdmz001]
+devsrxdmz001 ansible_host=192.168.11.103
+[devsrxdmz002]
+devsrxdmz002 ansible_host=192.168.11.104
+[devsrxdmz:children]
+devsrxdmz001
+devsrxdmz002
+
+[devsrx:children]
+devsrxcnc
+devsrxdmz
+
+##########################
+### STAGE CONTRAIL 3.x ###
+##########################
+
+[stgsrxcnc001]
+stgsrxcnc001 ansible_host=192.168.22.101
+[stgsrxcnc002]
+stgsrxcnc002 ansible_host=192.168.22.102
+[stgsrxcnc:children]
+stgsrxcnc001
+stgsrxcnc002
+
+[stgsrxdmz001]
+stgsrxdmz001 ansible_host=192.168.22.103
+[stgsrxdmz002]
+stgsrxdmz002 ansible_host=192.168.22.104
+[stgsrxdmz:children]
+stgsrxdmz001
+stgsrxdmz002
+
+[stgsrx:children]
+stgsrxcnc
+stgsrxdmz
+
+#########################
+### PROD CONTRAIL 2.x ###
+#########################
+
+[prdsrxcnc001]
+prdsrxcnc001 ansible_host=192.168.33.101 os_vmi_c2x=prdsrxcnc__1
+[prdsrxcnc002]
+prdsrxcnc002 ansible_host=192.168.33.102 os_vmi_c2x=prdsrxcnc__2
+[prdsrxcnc:children]
+prdsrxcnc001
+prdsrxcnc002
+
+[prdsrxdmz001]
+prdsrxdmz001 ansible_host=192.168.33.103 os_vmi_c2x=prdsrxdmz__1
+[prdsrxdmz002]
+prdsrxdmz002 ansible_host=192.168.33.104 os_vmi_c2x=prdsrxdmz__2
+[prdsrxdmz:children]
+prdsrxdmz001
+prdsrxdmz002
+
+[prdsrx:children]
+prdsrxcnc
+prdsrxdmz
+
+####################
+### CONTRAIL 2.x ###
+####################
+
+[c2x:children]
+prdsrx
+
+####################
+### CONTRAIL 3.x ###
+####################
+
+[c3x:children]
+devsrx
+stgsrx
